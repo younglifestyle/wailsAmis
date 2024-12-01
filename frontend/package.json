@@ -1,0 +1,58 @@
+{
+  "name": "testAmis",
+  "version": "1.0.0",
+  "description": "amis 可视化编辑器",
+  "main": "index.js",
+  "scripts": {
+    "dev": "amis dev",
+    "build": "amis build",
+    "format": "prettier --write \"src/**/**/*.{js,jsx,ts,tsx,vue,scss,json}\""
+  },
+  "keywords": [
+    "amis",
+    "editor"
+  ],
+  "author": "younglifestyle",
+  "devDependencies": {
+    "@babel/core": "^7.16.5",
+    "@babel/preset-react": "^7.16.5",
+    "babel-loader": "^8.2.3",
+    "css-loader": "^6.5.1",
+    "html-webpack-plugin": "^5.5.0",
+    "style-loader": "^3.3.1",
+    "webpack-cli": "^4.9.1",
+    "@fortawesome/fontawesome-free": "^5.15.3",
+    "amis": "6.9.0",
+    "amis-core": "6.9.0",
+    "amis-formula": "6.9.0",
+    "amis-ui": "6.9.0",
+    "amis-editor": "6.9.0",
+    "amis-editor-core": "6.9.0",
+    "axios": "0.21.1",
+    "copy-to-clipboard": "^3.2.0",
+    "mobx": "4.15.7",
+    "mobx-react": "6.3.1",
+    "mobx-state-tree": "3.17.3",
+    "qs": "6.5.3",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-hook-form": "^7.39.3",
+    "react-router": "5.0.1",
+    "react-router-dom": "5.0.1"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.123",
+    "@types/node": "^11.13.8",
+    "@types/qs": "^6.5.3",
+    "@types/react": "^16.9.0",
+    "@types/react-dom": "^16.9.0",
+    "@types/react-router": "5.0.1",
+    "@types/react-router-dom": "^5.3.3",
+    "acorn": "^8.8.2",
+    "amis-widget-cli": "^3.2.0",
+    "monaco-editor-webpack-plugin": "6.0.0",
+    "prettier": "^2.2.1",
+    "sass": "^1.63.4",
+    "typescript": "^4.5.5"
+  }
+}

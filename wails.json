@@ -1,0 +1,11 @@
+{
+  "name": "testAmis",
+  "assetdir": "./frontend/dist",
+  "frontend:install": "npm install --legacy-peer-deps",
+  "frontend:build": "npm run build",
+  "outputfilename": "testAmis",
+  "author": {
+    "name": "younglifestyle",
+    "email": "718800822@qq.com"
+  }
+}
