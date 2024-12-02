@@ -1,15 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import {Editor, ShortcutKey} from 'amis-editor';
-import {render as renderAmis, Select, toast} from 'amis';
+import {Select, toast} from 'amis';
 import {currentLocale} from 'i18n-runtime';
 import {Icon} from '../icons/index';
 import {IMainStore} from '../store';
 import '../editor/DisabledEditorPlugin'; // 用于隐藏一些不需要的Editor预置组件
 import '../renderer/MyRenderer';
 import '../editor/MyRenderer';
-// import {render as renderAmis} from "amis";
+import {observer} from "mobx-react";
+import {render as renderAmis} from "amis";
 
-let currentIndex = -1;
+let currentIndex = 0;
 
 let host = `${window.location.protocol}//${window.location.host}`;
 
@@ -27,11 +28,6 @@ const editorLanguages = [
 
 // 使用函数组件，并传入 store
 export function Amis({store}: { store: IMainStore }) {
-    if (!store) {
-        console.error("Store is not initialized");
-        return <div>Loading...</div>; // 或者显示其他错误提示
-    }
-
     const [mobile, setMobile] = useState(store.isMobile);
     const [preview, setPreview] = useState(store.preview);
     const [currFile, setCurrFile] = useState('');
@@ -48,6 +44,7 @@ export function Amis({store}: { store: IMainStore }) {
 
     // 处理保存
     function save() {
+        console.log("save()");
         store.updatePageSchemaAt(currentIndex);
         toast.success('保存成功', '提示');
     }

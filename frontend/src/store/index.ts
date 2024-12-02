@@ -24,7 +24,8 @@ export const MainStore = types
     addPageIsOpen: false,
     preview: false,
     isMobile: false,
-    schema: types.frozen()
+    schema: types.frozen(),
+    currFile: '', // 新增字段 currFile
   })
   .views(self => ({
     get fetcher() {
@@ -91,6 +92,11 @@ export const MainStore = types
       self.isMobile = value;
     }
 
+    // 新增更新 currFile 的 action
+    function setCurrFile(value: string) {
+      self.currFile = value;
+    }
+
     return {
       toggleAsideFolded,
       toggleAsideFixed,
@@ -102,6 +108,7 @@ export const MainStore = types
       updateSchema,
       setPreview,
       setIsMobile,
+      setCurrFile, // 新增的 action
       afterCreate() {
         // persist store
         if (typeof window !== 'undefined' && window.localStorage) {

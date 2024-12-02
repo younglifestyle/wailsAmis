@@ -1,6 +1,7 @@
 'use strict';
 const path = require('path');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 // 统一路径解析
 function resolve(dir) {
   return path.resolve(__dirname, dir);
@@ -9,6 +10,9 @@ function resolve(dir) {
 // 包括生产和开发的环境配置信息
 module.exports = {
   webpack: {
+    cache: {
+      type: 'filesystem', // 使用文件系统缓存
+    },
     // webpack的resolve配置
     resolve: {
       // 用于配置webpack在尝试过程中用到的后缀列表
@@ -62,6 +66,14 @@ module.exports = {
     entry: { // webpack构建入口
       index: './src/index.tsx',
       // editor:  './src/mobile.tsx'
+    },
+    optimization: {
+      minimize: true,
+      minimizer: [
+        new TerserPlugin({
+          parallel: true, // 启用并行处理
+        }),
+      ],
     },
     // 用于构建生产环境代码的相关配置信息
     NODE_ENV: 'production',

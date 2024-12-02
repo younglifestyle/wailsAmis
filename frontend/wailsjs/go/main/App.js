@@ -18,6 +18,10 @@ export function ReadFileData(arg1) {
   return window['go']['main']['App']['ReadFileData'](arg1);
 }
 
+export function SaveJsonToFile(arg1, arg2) {
+  return window['go']['main']['App']['SaveJsonToFile'](arg1, arg2);
+}
+
 export function SelectFile() {
   return window['go']['main']['App']['SelectFile']();
 }
