@@ -6,16 +6,27 @@ import (
 	"fmt"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"os"
+	"path/filepath"
+	"time"
 )
 
 // App struct
 type App struct {
-	ctx context.Context
+	ctx     context.Context
+	runPath string
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	return &App{}
+
+	runPath, err := GetRunPath()
+	if err != nil {
+		err := os.WriteFile("error.log", []byte(fmt.Sprintf("获取运行所在目录错误:%s", err)), 0666)
+		if err != nil {
+			return nil
+		}
+	}
+	return &App{runPath: runPath}
 }
 
 func (a *App) Notify(title, msg string) {
@@ -130,13 +141,26 @@ func (a *App) SaveJsonToFile(filename string, fileData interface{}) string {
 	jsonData, err := json.MarshalIndent(fileData, "", "  ")
 	if err != nil {
 		a.Error("保存json数据异常", err.Error())
-		return ""
+		return err.Error()
 	}
 
+	baseFileName := filepath.Base(filename)
+	baseHistoryFilePath := filepath.Join(a.runPath, "history", time.Now().Format("20060102"))
+	_ = os.MkdirAll(baseHistoryFilePath, 0666)
+
+	// 将数据写入历史文件
+	err = os.WriteFile(filepath.Join(baseHistoryFilePath, generateNewFileName(baseFileName)),
+		jsonData, 0666)
+	if err != nil {
+		a.Error("写入文件失败", fmt.Sprintf("文件: %s", err.Error()))
+		return err.Error()
+	}
+
+	// 将数据写回源文件
 	err = os.WriteFile(filename, jsonData, 0666)
 	if err != nil {
 		a.Error("写入文件失败", fmt.Sprintf("文件: %s", err.Error()))
-		return ""
+		return err.Error()
 	}
 	return ""
 }

@@ -46,7 +46,18 @@ export default inject('store')(
 
         function save() {
             store.updatePageSchemaAt(index);
-            toast.success('保存成功', '提示');
+
+            // @ts-ignore
+            window.go.main.App.SaveJsonToFile(store.currFile, store.schema)
+                .then((result: any) => {
+                    console.log('保存成功', result);
+                    toast.success('保存成功', '提示');
+                })
+                .catch((error: any) => {
+                    console.error('保存文件失败:', error);
+                    toast.error('保存文件失败', '提示');
+                });
+            // toast.success('保存成功', '提示');
         }
 
         function onChange(value: any) {
@@ -90,8 +101,10 @@ export default inject('store')(
             // @ts-ignore
             window.go.main.App.SaveJsonToFile(store.currFile, store.schema)
                 .then((result: any) => {
-                    console.log('写入文件成功', result);
-                    toast.success('写入文件成功', '提示');
+                    if (result === "") {
+                        console.log('保存成功');
+                        toast.success('保存成功', '提示');
+                    }
                 })
                 .catch((error: any) => {
                     console.error('保存文件失败:', error);
@@ -120,7 +133,7 @@ export default inject('store')(
                                 },
                                 {
                                     type: "button",
-                                    label: "刷新",
+                                    label: "重开文件",
                                     id: "u:587e92d5ffcc",
                                     onClick: function () {
                                         updateSchemaFrom();
