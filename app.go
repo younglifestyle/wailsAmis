@@ -84,7 +84,7 @@ func (a *App) SelectFile() (fileResp FileResp) {
 		Filters: []runtime.FileFilter{
 			{
 				DisplayName: "template file",
-				Pattern:     "*.json",
+				Pattern:     "*.json;*.txt",
 			},
 		},
 	})
@@ -101,6 +101,22 @@ func (a *App) SelectFile() (fileResp FileResp) {
 	if err != nil {
 		a.Error("Error importing workflow", err.Error())
 		return
+	}
+
+	if len(data) == 0 {
+		data = []byte(`{
+  "type": "page",
+  "title": "newPage",
+  "body": [
+    {
+      "type": "tpl",
+      "tpl": "这是你默认填充的页面内容。",
+      "wrapperComponent": "",
+      "inline": false,
+      "id": "u:8a0fabf0ee75"
+    }
+  ]
+}`)
 	}
 
 	var jsonData interface{}
