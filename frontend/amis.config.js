@@ -39,14 +39,18 @@ module.exports = {
     entry: { // 本地调试模式的入口
       index: './src/index.tsx',
     },
+    output: {
+      path: path.resolve(__dirname, './dist'),
+      clean: true,
+    },
     // 用于开启本地调试模式的相关配置信息
     NODE_ENV: 'development',
     ignoreNodeModules: false, // 打包时是否忽略 node_modules
-    port: 80,
+    port: 31080,
     autoOpenBrowser: true,
-    assetsPublicPath: '/', // 设置静态资源的引用路径（根域名+路径）
-    assetsSubDirectory: '',
-    hostname: 'localhost',
+    // assetsPublicPath: '/', // 设置静态资源的引用路径（根域名+路径）
+    // assetsSubDirectory: '',
+    // hostname: 'localhost',
     cssSourceMap: false,
     closeHotReload: false, // 是否关闭热更新
     closeEditorClient: true, // 是否关闭自动注入editor
