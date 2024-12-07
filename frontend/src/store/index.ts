@@ -27,7 +27,8 @@ export const MainStore = types
         preview: false,
         isMobile: false,
         schema: types.frozen(),
-        currFile: 'E:\\MySecret\\vue\\myVueWails\\wails - 副本.json', // 新增字段 currFile
+        currFile: '', // 新增字段 currFile
+        proxyIp: 'http://127.0.0.1:32155', // 新增字段 currFile
     })
     .views(self => ({
         get fetcher() {

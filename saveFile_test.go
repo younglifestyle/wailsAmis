@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"path/filepath"
 	"testing"
 	"time"
@@ -29,4 +30,17 @@ func TestJson(t *testing.T) {
 	}
 
 	fmt.Println(string(jsonData))
+}
+
+func TestLoadConfig(t *testing.T) {
+	err := loadConfig("./config.yaml")
+	fmt.Println(err)
+
+	fmt.Println(*config)
+}
+
+func TestLog(t *testing.T) {
+	setLog()
+
+	log.Println("test")
 }

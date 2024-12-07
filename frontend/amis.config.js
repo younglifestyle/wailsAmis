@@ -60,8 +60,7 @@ module.exports = {
        * 详细使用见 https://www.webpackjs.com/configuration/dev-server/#devserver-proxy
        */
       '/apiTest': {
-        target: 'http://api-test.com.cn', // 不支持跨域的接口根地址
-        ws: true,
+        target: 'http://localhost:3000', // 不支持跨域的接口根地址
         changeOrigin: true,
       },
     }
@@ -93,5 +92,11 @@ module.exports = {
     productionGzipExtensions: ['js', 'css', 'json'],
     plugins: [new MonacoWebpackPlugin()],
     bundleAnalyzerReport: false,
+    proxy: {
+      '/api/v1': {
+        target: 'http://localhost:3000', // 后端 API 服务
+        changeOrigin: true,              // 更改请求头中的 Origin
+      },
+    }
   }
 };

@@ -150,7 +150,7 @@ export default inject('store')(
             // 使用 Clipboard API 来复制文本
             navigator.clipboard.writeText(store.currFile)
                 .then(() => {
-                    toast.info('内容已复制到剪贴板', '提示');
+                    toast.info('路径已复制到剪贴板', '提示');
                 })
                 .catch(() => {
                     toast.error('复制失败', '提示');

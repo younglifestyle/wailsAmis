@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"log"
+	"os"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -13,12 +14,26 @@ import (
 //go:embed frontend/dist
 var assets embed.FS
 
+var config = &Config{}
+
 func main() {
+	var err error
+
+	setLog()
+
 	// Create an instance of the app structure
 	app := NewApp()
 
+	err = loadConfig("./config.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// 开启Proxy服务
+	go proxyHttp()
+
 	// Create application with options
-	err := wails.Run(&options.App{
+	err = wails.Run(&options.App{
 		Title:  "Amis 在线编辑器",
 		Width:  1024,
 		Height: 768,
@@ -51,4 +66,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func setLog() {
+	log.SetFlags(log.Ldate | log.Ltime)
+
+	f, err := os.OpenFile("./testAmis.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, os.ModePerm)
+	if err != nil {
+		return
+	}
+	//defer f.Close()
+
+	log.SetOutput(f)
 }

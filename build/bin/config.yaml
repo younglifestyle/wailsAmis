@@ -1,0 +1,7 @@
+# 转发到的域名
+proxy_domain: "http://localhost:4001"
+proxy_headers:
+  - key: "X-Custom-Header-1"
+    value: "CustomValue1"
+#  - key: "Authorization"
+#    value: "Bearer your-token"
