@@ -10,6 +10,8 @@ export function Notify(arg1:string,arg2:string):Promise<void>;
 
 export function ReadFileData(arg1:string):Promise<any>;
 
+export function SaveAsFile(arg1:any):Promise<string>;
+
 export function SaveJsonToFile(arg1:string,arg2:any):Promise<string>;
 
 export function SelectFile():Promise<main.FileResp>;

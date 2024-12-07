@@ -1,14 +1,13 @@
 import React from 'react';
 import {Editor, ShortcutKey} from 'amis-editor';
 import {inject, observer} from 'mobx-react';
-import {Select, toast} from 'amis';
+import {render as renderAmis, Select, toast} from 'amis';
 import {currentLocale} from 'i18n-runtime';
 import {Icon} from '../icons/index';
 import {IMainStore} from '../store';
 import '../editor/DisabledEditorPlugin'; // 用于隐藏一些不需要的Editor预置组件
 import '../renderer/MyRenderer';
 import '../editor/MyRenderer';
-// import {render as renderAmis} from "amis";
 
 let currentIndex = 0;
 
@@ -20,8 +19,6 @@ if (/^\/amis-editor-demo/.test(window.location.pathname)) {
 }
 
 const schemaUrl = `${host}/schema.json`;
-
-console.log("schemaUrl : ", schemaUrl)
 
 const editorLanguages = [
     {
@@ -48,15 +45,22 @@ export default inject('store')(
         }
 
         function save() {
-            console.log("save()");
-
             store.updatePageSchemaAt(index);
-            toast.success('保存成功', '提示');
+
+            // @ts-ignore
+            window.go.main.App.SaveJsonToFile(store.currFile, store.schema)
+                .then((result: any) => {
+                    console.log('保存成功', result);
+                    toast.success('保存成功', '提示');
+                })
+                .catch((error: any) => {
+                    console.error('保存文件失败:', error);
+                    toast.error('保存文件失败', '提示');
+                });
+            // toast.success('保存成功', '提示');
         }
 
         function onChange(value: any) {
-            console.log("onChange()");
-
             store.updateSchema(value);
             store.updatePageSchemaAt(index);
         }
@@ -64,10 +68,6 @@ export default inject('store')(
         function changeLocale(value: string) {
             localStorage.setItem('suda-i18n-locale', value);
             window.location.reload();
-        }
-
-        function exit() {
-            // history.push(`/${store.pages[index].path}`);
         }
 
 
@@ -101,14 +101,15 @@ export default inject('store')(
             // @ts-ignore
             window.go.main.App.SaveJsonToFile(store.currFile, store.schema)
                 .then((result: any) => {
-                    console.log('写入文件成功', result);
-                    toast.success('写入文件成功', '提示');
+                    if (result === "") {
+                        console.log('保存成功');
+                        toast.success('保存成功', '提示');
+                    }
                 })
                 .catch((error: any) => {
                     console.error('保存文件失败:', error);
                     toast.error('保存文件失败', '提示');
                 });
-            toast.success('写入文件成功', '提示');
         }
 
 
@@ -116,42 +117,45 @@ export default inject('store')(
             <div className="Editor-Demo">
                 <div className="Editor-header">
                     <div className="Editor-title">
-                        amis 可视化编辑器
-                        {/*{renderAmis({*/}
-                        {/*    type: "form",*/}
-                        {/*    mode: "inline",*/}
-                        {/*    title: "",*/}
-                        {/*    wrapWithPanel: false,*/}
-                        {/*    className: "m-t-sm",*/}
-                        {/*    body: [*/}
-                        {/*        {*/}
-                        {/*            type: "button",*/}
-                        {/*            label: "打开文件",*/}
-                        {/*            onClick: function () {*/}
-                        {/*                selectFile();*/}
-                        {/*            },*/}
-                        {/*        },*/}
-                        {/*        {*/}
-                        {/*            name: store.currFile,*/}
-                        {/*            type: "input-text",*/}
-                        {/*            label: "当前编辑文件:",*/}
-                        {/*            disabled: true,*/}
-                        {/*            className: "mr-0",*/}
-                        {/*            id: "u:c50a308f1b0a",*/}
-                        {/*            size: "lg",*/}
-                        {/*            value: store.currFile, // 直接绑定 currFile*/}
-                        {/*            onChange: (e: any) => store.setCurrFile(e.target.value), // 设置 onChange 事件来更新 currFile*/}
-                        {/*        },*/}
-                        {/*        {*/}
-                        {/*            type: "button",*/}
-                        {/*            label: "刷新",*/}
-                        {/*            id: "u:587e92d5ffcc",*/}
-                        {/*            onClick: function () {*/}
-                        {/*                updateSchemaFrom();*/}
-                        {/*            },*/}
-                        {/*        }*/}
-                        {/*    ],*/}
-                        {/*})}*/}
+                        {renderAmis({
+                            type: "form",
+                            mode: "inline",
+                            title: "",
+                            wrapWithPanel: false,
+                            className: "m-t-sm",
+                            body: [
+                                {
+                                    type: "button",
+                                    label: "打开文件",
+                                    onClick: function () {
+                                        selectFile();
+                                    },
+                                },
+                                {
+                                    type: "button",
+                                    label: "重开文件",
+                                    id: "u:587e92d5ffcc",
+                                    onClick: function () {
+                                        updateSchemaFrom();
+                                    },
+                                },
+                                {
+                                    type: "tpl",
+                                    tpl: store.currFile,
+                                }
+                                // {
+                                //     name: store.currFile,
+                                //     type: "input-text",
+                                //     label: "当前编辑文件:",
+                                //     disabled: true,
+                                //     className: "mr-0",
+                                //     id: "u:c50a308f1b0a",
+                                //     size: "lg",
+                                //     value: store.currFile, // 直接绑定 currFile
+                                //     onChange: (e: any) => store.setCurrFile(e.target.value), // 设置 onChange 事件来更新 currFile
+                                // }
+                            ],
+                        })}
                     </div>
                     <div className="Editor-view-mode-group-container">
                         <div className="Editor-view-mode-group">

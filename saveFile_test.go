@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"testing"
@@ -19,4 +20,13 @@ func TestBaseFile(t *testing.T) {
 	runPath, _ := GetRunPath()
 	baseHistoryFilePath := filepath.Join(runPath, "history", time.Now().Format("20060102"))
 	fmt.Println(baseHistoryFilePath)
+}
+
+func TestJson(t *testing.T) {
+	jsonData, err := json.MarshalIndent([]byte{}, "", "  ")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(string(jsonData))
 }

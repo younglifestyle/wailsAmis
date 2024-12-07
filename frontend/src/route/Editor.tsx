@@ -1,6 +1,7 @@
 import React from 'react';
 import {Editor, ShortcutKey} from 'amis-editor';
 import {inject, observer} from 'mobx-react';
+import {RouteComponentProps} from 'react-router-dom';
 import {render as renderAmis, Select, toast} from 'amis';
 import {currentLocale} from 'i18n-runtime';
 import {Icon} from '../icons/index';
@@ -9,7 +10,7 @@ import '../editor/DisabledEditorPlugin'; // 用于隐藏一些不需要的Editor
 import '../renderer/MyRenderer';
 import '../editor/MyRenderer';
 
-let currentIndex = 0;
+let currentIndex = -1;
 
 let host = `${window.location.protocol}//${window.location.host}`;
 
@@ -34,40 +35,45 @@ const editorLanguages = [
 export default inject('store')(
     observer(function ({
                            store,
-                       }: { store: IMainStore }) {
-        // const index: number = parseInt(match.params.id, 10);
-        const index: number = 0;
+                           location,
+                           history,
+                           match
+                       }: { store: IMainStore } & RouteComponentProps<{ id: string }>) {
+        const index: number = parseInt(match.params.id, 10);
+        // const index: number = 0;
         const curLanguage = currentLocale(); // 获取当前语料类型
 
         if (index !== currentIndex) {
             currentIndex = index;
             store.updateSchema(store.pages[index].schema);
+            store.setCurrFile(store.pages[index].currFile);
         }
 
         function save() {
             store.updatePageSchemaAt(index);
 
-            // @ts-ignore
-            window.go.main.App.SaveJsonToFile(store.currFile, store.schema)
-                .then((result: any) => {
-                    console.log('保存成功', result);
-                    toast.success('保存成功', '提示');
-                })
-                .catch((error: any) => {
-                    console.error('保存文件失败:', error);
-                    toast.error('保存文件失败', '提示');
-                });
-            // toast.success('保存成功', '提示');
+            // 若设置有本地文件，则进行保存
+            if (store.currFile !== '') {
+                store.updatePageCurrFileAt(index);
+
+                // @ts-ignore
+                window.go.main.App.SaveJsonToFile(store.currFile, store.schema)
+                    .then((result: any) => {
+                        toast.success('保存成功', '提示');
+                    })
+                    .catch((error: any) => {
+                        console.error('保存文件失败:', error);
+                        toast.error('保存文件失败', '提示');
+                    });
+            } else {
+                toast.success('保存成功', '提示');
+            }
         }
 
         function onChange(value: any) {
             store.updateSchema(value);
             store.updatePageSchemaAt(index);
-        }
-
-        function changeLocale(value: string) {
-            localStorage.setItem('suda-i18n-locale', value);
-            window.location.reload();
+            store.updatePageCurrFileAt(index);
         }
 
 
@@ -80,37 +86,76 @@ export default inject('store')(
                     store.setCurrFile(result.FileName);
                     // 设置从文件中读取的template
                     store.updateSchema(result.FileData);
-
                     // console.log(result.FileName, result.FileData);
                 }
             });
         };
 
-        const updateSchemaFrom = () => {
+        const reReadSchemaFrom = () => {
+            // 若设置有本地文件，则进行重读
+            if (store.currFile !== '') {
+                // @ts-ignore
+                window.go.main.App.ReadFileData(store.currFile).then((result) => {
+                    if (result !== '') {
+                        // console.log(result);
+                        store.updateSchema(result);
+                    }
+                });
+            } else {
+                toast.warning('没有设置本地文件', '提示');
+            }
+        };
+
+        const saveAsFile = () => {
             // @ts-ignore
-            window.go.main.App.ReadFileData(store.currFile).then((result) => {
+            window.go.main.App.SaveAsFile(store.schema).then((result) => {
                 if (result !== '') {
-                    // console.log(result);
-                    store.updateSchema(result);
+                    // 设置新存为的文件名
+                    store.setCurrFile(result);
                 }
             });
         };
 
+
         // 保存内容到文件中
         function saveScheme() {
-            // @ts-ignore
-            window.go.main.App.SaveJsonToFile(store.currFile, store.schema)
-                .then((result: any) => {
-                    if (result === "") {
-                        console.log('保存成功');
-                        toast.success('保存成功', '提示');
-                    }
-                })
-                .catch((error: any) => {
-                    console.error('保存文件失败:', error);
-                    toast.error('保存文件失败', '提示');
-                });
+            if (store.currFile !== '') {
+                // @ts-ignore
+                window.go.main.App.SaveJsonToFile(store.currFile, store.schema)
+                    .then((result: any) => {
+                        if (result === "") {
+                            console.log('保存成功');
+                            toast.success('保存成功', '提示');
+                        }
+                    })
+                    .catch((error: any) => {
+                        console.error('保存文件失败:', error);
+                        toast.error('保存文件失败', '提示');
+                    });
+            }
         }
+
+        function changeLocale(value: string) {
+            localStorage.setItem('suda-i18n-locale', value);
+            window.location.reload();
+        }
+
+
+        function exit() {
+            history.push(`/${store.pages[index].path}`);
+        }
+
+        // 处理点击复制的函数
+        const handleCopy = () => {
+            // 使用 Clipboard API 来复制文本
+            navigator.clipboard.writeText(store.currFile)
+                .then(() => {
+                    toast.info('内容已复制到剪贴板', '提示');
+                })
+                .catch(() => {
+                    toast.error('复制失败', '提示');
+                });
+        };
 
 
         return (
@@ -126,23 +171,64 @@ export default inject('store')(
                             body: [
                                 {
                                     type: "button",
-                                    label: "打开文件",
+                                    label: "",
+                                    tooltip: "打开新文件",
+                                    icon: "fa fa-file",
                                     onClick: function () {
                                         selectFile();
                                     },
                                 },
                                 {
                                     type: "button",
-                                    label: "重开文件",
-                                    id: "u:587e92d5ffcc",
+                                    label: "",
+                                    icon: "fa fa-refresh",
+                                    tooltip: "重新读取文件",
                                     onClick: function () {
-                                        updateSchemaFrom();
+                                        reReadSchemaFrom();
                                     },
                                 },
                                 {
-                                    type: "tpl",
-                                    tpl: store.currFile,
-                                }
+                                    type: "button",
+                                    label: "",
+                                    icon: "fa fa-trash-o",
+                                    tooltip: "去除文件关联",
+                                    onClick: function () {
+                                        store.setCurrFile('');
+                                        // 去除页面内保存的数据
+                                        store.updatePageCurrFileAt(index)
+                                    },
+                                },
+                                {
+                                    type: "button",
+                                    label: "",
+                                    icon: "fa fa-floppy-o",
+                                    tooltip: "另存为",
+                                    onClick: function () {
+                                        saveAsFile()
+                                    },
+                                },
+                                // {
+                                //     type: "tpl",
+                                //     tpl: <div style={{
+                                //         userSelect: 'text',
+                                //     }}> {store.currFile} </div>
+                                // }
+                                // {
+                                //     type: "tpl",
+                                //     // tpl: store.currFile
+                                //     tpl: store.currFile.length > 42 ? store.currFile.slice(0, 42) + '...' : store.currFile,
+                                //     tooltip: store.currFile,
+                                //     popOver: {
+                                //         trigger: "hover",
+                                //         position: "left-top",
+                                //         showIcon: false,
+                                //         title: "",
+                                //         body: {
+                                //             "type": "tpl",
+                                //             "tpl": "213123"
+                                //         }
+                                //     }
+                                // }
                                 // {
                                 //     name: store.currFile,
                                 //     type: "input-text",
@@ -156,6 +242,16 @@ export default inject('store')(
                                 // }
                             ],
                         })}
+                        <div
+                            style={{
+                                userSelect: 'text',
+                                wordBreak: 'break-word',
+                            }}
+                            title={store.currFile}
+                            onClick={handleCopy}
+                        >
+                            {store.currFile.length > 42 ? store.currFile.slice(0, 42) + '...' : store.currFile}
+                        </div>
                     </div>
                     <div className="Editor-view-mode-group-container">
                         <div className="Editor-view-mode-group">
@@ -202,8 +298,18 @@ export default inject('store')(
                             {store.preview ? '编辑' : '预览'}
                         </div>
                         {!store.preview && (
-                            <div className="header-action-btn exit-btn" onClick={saveScheme}>
+                            <div
+                                className="header-action-btn exit-btn"
+                                title="保存至文件(Ctrl+S)"
+                                style={{cursor: 'pointer'}}
+                                onClick={save}
+                            >
                                 保存
+                            </div>
+                        )}
+                        {!store.preview && (
+                            <div className={`header-action-btn exit-btn`} onClick={exit}>
+                                退出
                             </div>
                         )}
                     </div>

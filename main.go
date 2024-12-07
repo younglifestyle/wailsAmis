@@ -19,7 +19,7 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "testAmis",
+		Title:  "Amis 在线编辑器",
 		Width:  1024,
 		Height: 768,
 		// MinWidth:          720,

@@ -180,3 +180,50 @@ func (a *App) SaveJsonToFile(filename string, fileData interface{}) string {
 	}
 	return ""
 }
+
+func (a *App) SaveAsFile(fileData interface{}) string {
+
+	filename, err := runtime.SaveFileDialog(a.ctx, runtime.SaveDialogOptions{
+		Title: "amis模板文件",
+		Filters: []runtime.FileFilter{
+			{
+				DisplayName: "template file",
+				Pattern:     "*.json",
+			},
+		},
+	})
+	if err != nil {
+		a.Error("创建文件失败 : ", err.Error())
+		return ""
+	}
+	if filename == "" {
+		return ""
+	}
+
+	// fileData map[string]interface
+	jsonData, err := json.MarshalIndent(fileData, "", "  ")
+	if err != nil {
+		a.Error("保存json数据异常", err.Error())
+		return err.Error()
+	}
+
+	baseFileName := filepath.Base(filename)
+	baseHistoryFilePath := filepath.Join(a.runPath, "history", time.Now().Format("20060102"))
+	_ = os.MkdirAll(baseHistoryFilePath, 0666)
+
+	// 将数据写入历史文件
+	err = os.WriteFile(filepath.Join(baseHistoryFilePath, generateNewFileName(baseFileName)),
+		jsonData, 0666)
+	if err != nil {
+		a.Error("写入文件失败", fmt.Sprintf("文件: %s", err.Error()))
+		return err.Error()
+	}
+
+	// 将数据写回源文件
+	err = os.WriteFile(filename, jsonData, 0666)
+	if err != nil {
+		a.Error("写入文件失败", fmt.Sprintf("文件: %s", err.Error()))
+		return err.Error()
+	}
+	return filename
+}
