@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -154,7 +155,8 @@ func (a *App) ReadFileData(filename string) interface{} {
 func (a *App) SaveJsonToFile(filename string, fileData interface{}) string {
 
 	// fileData map[string]interface
-	jsonData, err := json.MarshalIndent(fileData, "", "  ")
+	//jsonData, err := json.MarshalIndent(fileData, "", "  ")
+	jsonData, err := jsonMarshalIndentNoEscape(fileData)
 	if err != nil {
 		a.Error("保存json数据异常", err.Error())
 		return err.Error()
@@ -201,7 +203,8 @@ func (a *App) SaveAsFile(fileData interface{}) string {
 	}
 
 	// fileData map[string]interface
-	jsonData, err := json.MarshalIndent(fileData, "", "  ")
+	//jsonData, err := json.MarshalIndent(fileData, "", "  ")
+	jsonData, err := jsonMarshalIndentNoEscape(fileData)
 	if err != nil {
 		a.Error("保存json数据异常", err.Error())
 		return err.Error()
@@ -226,4 +229,15 @@ func (a *App) SaveAsFile(fileData interface{}) string {
 		return err.Error()
 	}
 	return filename
+}
+
+func jsonMarshalIndentNoEscape(v any) ([]byte, error) {
+	buffer := &bytes.Buffer{}
+	encoder := json.NewEncoder(buffer)
+	encoder.SetEscapeHTML(false)
+	encoder.SetIndent("", "    ")
+
+	err := encoder.Encode(v)
+	buf := append([]byte(nil), buffer.Bytes()...)
+	return buf, err
 }

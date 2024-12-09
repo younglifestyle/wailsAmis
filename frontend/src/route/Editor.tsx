@@ -99,6 +99,7 @@ export default inject('store')(
                     if (result !== '') {
                         // console.log(result);
                         store.updateSchema(result);
+                        store.updatePageSchemaAt(index);
                     }
                 });
             } else {

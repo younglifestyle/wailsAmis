@@ -44,3 +44,16 @@ func TestLog(t *testing.T) {
 
 	log.Println("test")
 }
+
+func TestJsonMarshal(t *testing.T) {
+	mpTest := map[string]any{
+		"tpl": "<img src='${image}' style='width: 100%; height: 100%;' />",
+	}
+
+	marshal, _ := json.Marshal(mpTest)
+	fmt.Println(string(marshal))
+
+	indentNoEscape, _ := jsonMarshalIndentNoEscape(mpTest)
+	fmt.Println(string(indentNoEscape))
+
+}
