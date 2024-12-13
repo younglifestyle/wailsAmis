@@ -8,9 +8,13 @@ import (
 	"time"
 )
 
+var proxyHandler *ProxyHandler
+
 func proxyHttp() {
+	var err error
+
 	// 创建代理处理器
-	proxyHandler, err := NewProxyHandler(config)
+	proxyHandler, err = NewProxyHandler()
 	if err != nil {
 		log.Fatalf("Error creating proxy handler: %v", err)
 	}

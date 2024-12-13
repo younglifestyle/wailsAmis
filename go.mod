@@ -3,6 +3,7 @@ module testAmis
 go 1.23.3
 
 require (
+	github.com/fsnotify/fsnotify v1.8.0
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-gonic/gin v1.10.0
 	github.com/wailsapp/wails/v2 v2.9.2

@@ -1,5 +1,5 @@
-# 转发到的域名
-# proxy_domain: "https://linksee-test.longsys.com"
+# 关闭应用内代理，默认代理开启
+#disable_proxy: false
 proxy_headers:
   - key: "X-Custom-Header-1"
     value: "CustomValue1"

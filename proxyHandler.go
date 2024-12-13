@@ -16,7 +16,7 @@ type ProxyHandler struct {
 }
 
 // NewProxyHandler 创建代理处理器并排序路径
-func NewProxyHandler(config *Config) (*ProxyHandler, error) {
+func NewProxyHandler() (*ProxyHandler, error) {
 	handler := &ProxyHandler{
 		proxies: make(map[string]*httputil.ReverseProxy),
 	}

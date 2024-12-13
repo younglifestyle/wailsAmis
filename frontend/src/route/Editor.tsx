@@ -149,13 +149,15 @@ export default inject('store')(
         // 处理点击复制的函数
         const handleCopy = () => {
             // 使用 Clipboard API 来复制文本
-            navigator.clipboard.writeText(store.currFile)
-                .then(() => {
-                    toast.info('路径已复制到剪贴板', '提示');
-                })
-                .catch(() => {
-                    toast.error('复制失败', '提示');
-                });
+            if (store.currFile !== '') {
+                navigator.clipboard.writeText(store.currFile)
+                    .then(() => {
+                        toast.info('路径已复制到剪贴板', '提示');
+                    })
+                    .catch(() => {
+                        toast.error('复制失败', '提示');
+                    });
+            }
         };
 
 
@@ -208,6 +210,16 @@ export default inject('store')(
                                         saveAsFile()
                                     },
                                 },
+                                {
+                                    type: "button",
+                                    label: "",
+                                    icon: "far fa-file-alt",
+                                    tooltip: '模板路径:'+store.currFile,
+                                    visibleOn: store.currFile !== ''? "true" : "false",
+                                    onClick: function () {
+                                        handleCopy()
+                                    },
+                                },
                                 // {
                                 //     type: "tpl",
                                 //     tpl: <div style={{
@@ -243,16 +255,16 @@ export default inject('store')(
                                 // }
                             ],
                         })}
-                        <div
-                            style={{
-                                userSelect: 'text',
-                                wordBreak: 'break-word',
-                            }}
-                            title={store.currFile}
-                            onClick={handleCopy}
-                        >
-                            {store.currFile.length > 42 ? store.currFile.slice(0, 42) + '...' : store.currFile}
-                        </div>
+                        {/*<div*/}
+                        {/*    style={{*/}
+                        {/*        userSelect: 'text',*/}
+                        {/*        wordBreak: 'break-word',*/}
+                        {/*    }}*/}
+                        {/*    title={store.currFile}*/}
+                        {/*    onClick={handleCopy}*/}
+                        {/*>*/}
+                        {/*    {store.currFile.length > 42 ? store.currFile.slice(0, 42) + '...' : store.currFile}*/}
+                        {/*</div>*/}
                     </div>
                     <div className="Editor-view-mode-group-container">
                         <div className="Editor-view-mode-group">

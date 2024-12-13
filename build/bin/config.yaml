@@ -1,7 +1,15 @@
-# 转发到的域名
-proxy_domain: "http://localhost:4001"
+# 关闭应用内代理，默认代理开启
+#disable_proxy: false
 proxy_headers:
   - key: "X-Custom-Header-1"
     value: "CustomValue1"
-#  - key: "Authorization"
-#    value: "Bearer your-token"
+  - key: "Authorization"
+    value: "<user>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Inphbmdob25nIiwidWlkIjo0LCJqd3R0b2tlbiI6ImdEMkVIcUNBYmEiLCJleHAiOjE3MzM2MjIxNTYsImlzcyI6InVzZXIifQ.CZ9pCiGXet_seR1jSK4MmhN-_JL3kyGkiwvlIU3jh2Q"
+proxies:
+  - path: "/"
+    target: "http://localhost:4003"
+  - path: "/xxxxxxxxx"
+    target: "http://localhost:4001"
+    headers:
+      - key: "X-API-Header"
+        value: "Value2"
